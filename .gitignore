@@ -1,4 +1,6 @@
 node_modules
+__pycache__/
+*.pyc
 dist
 dist-ssr
 *.local
@@ -7,4 +9,3 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-.cursor
