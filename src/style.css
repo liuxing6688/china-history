@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   THREE-LAYER DESIGN TOKENS — THE GLORY OF TANG DYNASTY
+   盛唐文明与丝绸之路 · 东方美学色彩与间距体系
+   ========================================================================== */
+
+:root {
+  /* Layer 1: Primitive Tokens (朱砂红 · 鎏金色 · 绛紫色 · 宣纸米白 · 敦煌石青) */
+  --primitive-cinnabar-500: #A82424;
+  --primitive-cinnabar-400: #C83732;
+  --primitive-cinnabar-700: #7B1818;
+
+  --primitive-gilt-500: #C89B40;
+  --primitive-gilt-300: #E2BE6F;
+  --primitive-gilt-700: #936D22;
+
+  --primitive-imperial-500: #5E2338;
+  --primitive-imperial-300: #823652;
+  --primitive-imperial-700: #3E1424;
+
+  --primitive-xuan-100: #F8F3E8;
+  --primitive-xuan-200: #F1E8D6;
+  --primitive-xuan-300: #E4D7BE;
+  --primitive-xuan-50: #FCF9F2;
+
+  --primitive-ink-900: #1E1814;
+  --primitive-ink-700: #4A3E35;
+  --primitive-ink-500: #76675B;
+
+  --primitive-dunhuang-cyan: #2B5B6C;
+  --primitive-dunhuang-jade: #2F6E59;
+  --primitive-dunhuang-ochre: #B56337;
+
+  /* Layer 2: Semantic Tokens (Default: 宣纸雅集日间模式) */
+  --color-cinnabar: var(--primitive-cinnabar-500);
+  --color-cinnabar-light: var(--primitive-cinnabar-400);
+  --color-cinnabar-dark: var(--primitive-cinnabar-700);
+
+  --color-gilt: var(--primitive-gilt-500);
+  --color-gilt-light: var(--primitive-gilt-300);
+  --color-gilt-dark: var(--primitive-gilt-700);
+
+  --color-imperial: var(--primitive-imperial-500);
+  --color-imperial-light: var(--primitive-imperial-300);
+  --color-imperial-dark: var(--primitive-imperial-700);
+
+  --color-xuan: var(--primitive-xuan-100);
+  --color-xuan-paper: var(--primitive-xuan-200);
+  --color-xuan-card: var(--primitive-xuan-50);
+  --color-xuan-elevated: #FFFFFF;
+
+  --color-ink: var(--primitive-ink-900);
+  --color-ink-secondary: var(--primitive-ink-700);
+  --color-ink-muted: var(--primitive-ink-500);
+
+  --color-dunhuang-cyan: var(--primitive-dunhuang-cyan);
+  --color-dunhuang-jade: var(--primitive-dunhuang-jade);
+  --color-dunhuang-ochre: var(--primitive-dunhuang-ochre);
+
+  --border-scroll: rgba(200, 155, 64, 0.32);
+  --border-cinnabar: rgba(168, 36, 36, 0.25);
+}
+
+/* 大明宫夜览模式 (Dark Mode: 玄黑鎏金绛紫) */
+html.dark {
+  --color-cinnabar: #D43F3A;
+  --color-cinnabar-light: #E85D56;
+  --color-cinnabar-dark: #9B2222;
+
+  --color-gilt: #D9AE54;
+  --color-gilt-light: #EDD089;
+  --color-gilt-dark: #B58932;
+
+  --color-imperial: #943D5B;
+  --color-imperial-light: #B85879;
+  --color-imperial-dark: #541D31;
+
+  --color-xuan: #14100E;
+  --color-xuan-paper: #1D1714;
+  --color-xuan-card: #241D19;
+  --color-xuan-elevated: #2D241F;
+
+  --color-ink: #F5EFE6;
+  --color-ink-secondary: #D4C8B8;
+  --color-ink-muted: #9E8F7E;
+
+  --color-dunhuang-cyan: #5293A8;
+  --color-dunhuang-jade: #4EA185;
+  --color-dunhuang-ochre: #D98254;
+
+  --border-scroll: rgba(217, 174, 84, 0.28);
+  --border-cinnabar: rgba(212, 63, 58, 0.32);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+
+  h1, h2, h3, h4, .font-serif-tang {
+    font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+  }
+}
+
+/* 宣纸底纹与唐式卷轴边框装饰 */
+.tang-paper-bg {
+  background-color: var(--color-xuan);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(200, 155, 64, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(168, 36, 36, 0.05) 0%, transparent 45%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(147, 109, 34, 0.025) 0px,
+      rgba(147, 109, 34, 0.025) 1px,
+      transparent 1px,
+      transparent 28px
+    );
+}
+
+/* 古籍函套与金线边框卡片 */
+.tang-scroll-card {
+  background-color: var(--color-xuan-card);
+  border: 1px solid var(--border-scroll);
+  position: relative;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.tang-scroll-card:hover {
+  border-color: var(--color-gilt);
+  box-shadow: 0 16px 36px -10px rgba(28, 20, 16, 0.14), 0 0 18px -4px rgba(200, 155, 64, 0.22);
+}
+
+/* 四角回纹唐风装饰角标 */
+.tang-corner-frame {
+  position: relative;
+}
+.tang-corner-frame::before,
+.tang-corner-frame::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--color-gilt);
+  pointer-events: none;
+  opacity: 0.75;
+}
+.tang-corner-frame::before {
+  top: 6px;
+  left: 6px;
+  border-top: 2px solid var(--color-gilt);
+  border-left: 2px solid var(--color-gilt);
+}
+.tang-corner-frame::after {
+  bottom: 6px;
+  right: 6px;
+  border-bottom: 2px solid var(--color-gilt);
+  border-right: 2px solid var(--color-gilt);
+}
+
+/* 朱砂篆刻印章样式 */
+.tang-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #FFFDF9;
+  background: linear-gradient(135deg, #B52828 0%, #8E1B1B 100%);
+  border: 1.5px solid #D9534F;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 250, 240, 0.35), 0 2px 6px rgba(142, 27, 27, 0.3);
+  border-radius: 3px;
+}
+
+/* 竖排古籍题签 */
+.vertical-rl-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+/* 自定义古典滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-xuan-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 155, 64, 0.55);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cinnabar);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
