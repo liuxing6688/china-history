@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
   Search,
@@ -17,6 +17,7 @@ import {
   Home
 } from 'lucide-vue-next'
 import { museumApi, type GlobalSearchResult } from '@/services/museumApi'
+import TangEmblemIcon from '@/components/common/TangEmblemIcon.vue'
 
 const props = defineProps<{
   isDark: boolean
@@ -29,9 +30,55 @@ const emit = defineEmits<{
 const router = useRouter()
 const route = useRoute()
 
+const headerRef = ref<HTMLElement | null>(null)
+const isOverDarkSection = ref(false)
 const mobileMenuOpen = ref(false)
 const searchOpen = ref(false)
 const searchQuery = ref('')
+
+// Whether navbar should render in Imperial Dark Gilt palette (either global dark mode or overlapping a dark hero/map section)
+const useDarkHeader = computed(() => props.isDark || isOverDarkSection.value)
+
+let rafId: number | null = null
+
+function checkDarkOverlap() {
+  const navHeight = headerRef.value?.offsetHeight || 80
+  const darkSections = document.querySelectorAll<HTMLElement>('[data-navbar-contrast="dark"]')
+  let overlapping = false
+
+  for (const section of darkSections) {
+    const rect = section.getBoundingClientRect()
+    // Trigger dark immersive navbar as soon as a dark section scrolls underneath the sticky header
+    if (rect.top < navHeight - 6 && rect.bottom > navHeight * 0.35) {
+      overlapping = true
+      break
+    }
+  }
+
+  isOverDarkSection.value = overlapping
+}
+
+function onScrollOrResize() {
+  if (rafId !== null) return
+  rafId = window.requestAnimationFrame(() => {
+    checkDarkOverlap()
+    rafId = null
+  })
+}
+
+onMounted(() => {
+  checkDarkOverlap()
+  window.addEventListener('scroll', onScrollOrResize, { passive: true })
+  window.addEventListener('resize', onScrollOrResize, { passive: true })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScrollOrResize)
+  window.removeEventListener('resize', onScrollOrResize)
+  if (rafId !== null) {
+    window.cancelAnimationFrame(rafId)
+  }
+})
 
 const navItems = [
   { path: '/', label: '盛世总览', sub: '长安序章', icon: Home },
@@ -56,13 +103,28 @@ function navigateTo(path: string) {
   searchQuery.value = ''
 }
 
-watch(() => route.fullPath, () => {
-  mobileMenuOpen.value = false
-})
+watch(
+  () => route.fullPath,
+  async () => {
+    mobileMenuOpen.value = false
+    await nextTick()
+    checkDarkOverlap()
+    // Re-check after route transition completes (out-in 200ms)
+    window.setTimeout(checkDarkOverlap, 220)
+  }
+)
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 bg-xuan-card/95 backdrop-blur-md border-b border-gilt/35 shadow-scroll">
+  <header
+    ref="headerRef"
+    class="sticky top-0 z-50 backdrop-blur-md border-b transition-colors duration-300"
+    :class="
+      useDarkHeader
+        ? 'bg-[#18120F]/95 border-gilt/45 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'
+        : 'bg-xuan-card/95 border-gilt/35 shadow-scroll'
+    "
+  >
     <!-- Top Imperial Cinnabar & Gilt Ribbon -->
     <div class="h-1 w-full bg-gradient-to-r from-imperial via-cinnabar to-gilt"></div>
 
@@ -74,17 +136,34 @@ watch(() => route.fullPath, () => {
           class="flex items-center gap-3 group focus:outline-none shrink-0"
           aria-label="盛唐文明与丝绸之路 数字博物馆首页"
         >
-          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded bg-gradient-to-br from-cinnabar to-imperial flex flex-col items-center justify-center text-white border border-gilt/60 shadow-md group-hover:scale-105 transition">
-            <span class="font-serif font-black text-base sm:text-lg leading-none tracking-tighter">大唐</span>
-            <span class="text-[9px] tracking-widest text-gilt-light font-mono mt-0.5">618-907</span>
-          </div>
+          <TangEmblemIcon size="md" />
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-serif font-bold text-base sm:text-xl text-ink tracking-wider group-hover:text-cinnabar transition">
+              <span
+                class="font-serif font-bold text-base sm:text-xl tracking-wider transition-colors duration-300"
+                :class="
+                  useDarkHeader
+                    ? 'text-[#FFFDF9] group-hover:text-gilt-light'
+                    : 'text-ink group-hover:text-cinnabar'
+                "
+              >
                 盛唐文明与丝绸之路
               </span>
+              <span
+                class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono tracking-wider border transition-colors duration-300"
+                :class="
+                  useDarkHeader
+                    ? 'bg-cinnabar/30 text-gilt-light border-gilt/40'
+                    : 'bg-cinnabar/10 text-cinnabar border-cinnabar/25'
+                "
+              >
+                618–907
+              </span>
             </div>
-            <p class="text-[10px] sm:text-xs font-mono tracking-[0.18em] text-gilt-dark uppercase">
+            <p
+              class="text-[10px] sm:text-xs font-mono tracking-[0.18em] uppercase transition-colors duration-300"
+              :class="useDarkHeader ? 'text-gilt-light' : 'text-gilt-dark'"
+            >
               THE GLORY OF TANG DYNASTY
             </p>
           </div>
@@ -96,20 +175,36 @@ watch(() => route.fullPath, () => {
             v-for="item in navItems"
             :key="item.path"
             :to="item.path"
-            class="px-3 py-2 rounded-md text-sm font-medium transition-all flex flex-col items-center group relative"
+            class="px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex flex-col items-center group relative"
             :class="
               route.path === item.path
-                ? 'text-cinnabar bg-cinnabar/10 font-semibold'
-                : 'text-ink-secondary hover:text-cinnabar hover:bg-gilt/10'
+                ? useDarkHeader
+                  ? 'text-gilt-light bg-cinnabar/35 font-semibold ring-1 ring-gilt/35'
+                  : 'text-cinnabar bg-cinnabar/10 font-semibold'
+                : useDarkHeader
+                  ? 'text-[#F5EFE6] hover:text-gilt-light hover:bg-white/10'
+                  : 'text-ink-secondary hover:text-cinnabar hover:bg-gilt/15'
             "
           >
             <span class="font-serif tracking-wide">{{ item.label }}</span>
-            <span class="text-[10px] text-ink-muted group-hover:text-gilt-dark leading-tight mt-0.5">
+            <span
+              class="text-[10px] leading-tight mt-0.5 transition-colors duration-200"
+              :class="
+                route.path === item.path
+                  ? useDarkHeader
+                    ? 'text-[#F7EFE2]'
+                    : 'text-cinnabar/80'
+                  : useDarkHeader
+                    ? 'text-[#C9BAA6] group-hover:text-gilt-light'
+                    : 'text-ink-muted group-hover:text-gilt-dark'
+              "
+            >
               {{ item.sub }}
             </span>
             <span
               v-if="route.path === item.path"
-              class="absolute bottom-0 left-3 right-3 h-0.5 bg-cinnabar rounded-full"
+              class="absolute bottom-0 left-3 right-3 h-0.5 rounded-full transition-colors duration-200"
+              :class="useDarkHeader ? 'bg-gilt-light' : 'bg-cinnabar'"
             ></span>
           </router-link>
         </nav>
@@ -119,30 +214,52 @@ watch(() => route.fullPath, () => {
           <!-- Global Search Button -->
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm bg-xuan-paper border border-gilt/40 text-ink-secondary hover:border-cinnabar hover:text-cinnabar transition cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm border transition-all duration-200 cursor-pointer"
+            :class="
+              useDarkHeader
+                ? 'bg-white/10 border-gilt/45 text-[#F5EFE6] hover:border-gilt-light hover:text-gilt-light hover:bg-white/15'
+                : 'bg-xuan-paper border-gilt/40 text-ink-secondary hover:border-cinnabar hover:text-cinnabar'
+            "
             aria-label="检索典藏人物、事件与文物"
             @click="searchOpen = !searchOpen"
           >
-            <Search class="w-4 h-4 text-cinnabar" />
+            <Search
+              class="w-4 h-4 transition-colors"
+              :class="useDarkHeader ? 'text-gilt-light' : 'text-cinnabar'"
+            />
             <span class="hidden sm:inline">典藏检索</span>
           </button>
 
           <!-- Theme Switcher -->
           <button
             type="button"
-            class="p-2 rounded-full bg-xuan-paper border border-gilt/40 text-ink-secondary hover:text-cinnabar hover:border-cinnabar transition cursor-pointer"
+            class="p-2 rounded-full border transition-all duration-200 cursor-pointer"
+            :class="
+              useDarkHeader
+                ? 'bg-white/10 border-gilt/45 text-[#F5EFE6] hover:text-gilt-light hover:border-gilt-light hover:bg-white/15'
+                : 'bg-xuan-paper border-gilt/40 text-ink-secondary hover:text-cinnabar hover:border-cinnabar'
+            "
             :title="props.isDark ? '切换至宣纸白昼模式' : '切换至大明宫夜览模式'"
             :aria-label="props.isDark ? '切换至宣纸白昼模式' : '切换至大明宫夜览模式'"
             @click="emit('toggleTheme')"
           >
-            <Sun v-if="props.isDark" class="w-4 h-4 text-gilt" />
-            <Moon v-else class="w-4 h-4 text-imperial" />
+            <Sun v-if="props.isDark" class="w-4 h-4 text-gilt-light" />
+            <Moon
+              v-else
+              class="w-4 h-4 transition-colors"
+              :class="useDarkHeader ? 'text-gilt-light' : 'text-imperial'"
+            />
           </button>
 
           <!-- Mobile Hamburger -->
           <button
             type="button"
-            class="xl:hidden p-2 rounded-md bg-xuan-paper border border-gilt/40 text-ink hover:text-cinnabar transition cursor-pointer"
+            class="xl:hidden p-2 rounded-md border transition-all duration-200 cursor-pointer"
+            :class="
+              useDarkHeader
+                ? 'bg-white/10 border-gilt/45 text-[#F5EFE6] hover:text-gilt-light hover:border-gilt-light'
+                : 'bg-xuan-paper border-gilt/40 text-ink hover:text-cinnabar'
+            "
             aria-label="展开导航菜单"
             :aria-expanded="mobileMenuOpen"
             @click="mobileMenuOpen = !mobileMenuOpen"

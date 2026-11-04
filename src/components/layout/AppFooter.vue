@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TangEmblemIcon from '@/components/common/TangEmblemIcon.vue'
 import TangSealBadge from '@/components/common/TangSealBadge.vue'
 </script>
 
@@ -11,13 +12,16 @@ import TangSealBadge from '@/components/common/TangSealBadge.vue'
       <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
         <!-- Brand & Narrative Positioning -->
         <div class="md:col-span-5 space-y-4">
-          <div class="flex items-center gap-3">
-            <TangSealBadge text="大唐典藏" size="md" />
+          <div class="flex items-center gap-3.5 group">
+            <TangEmblemIcon size="md" />
             <div>
-              <h3 class="font-serif font-bold text-xl text-ink tracking-wider">
-                盛唐文明与丝绸之路
-              </h3>
-              <p class="text-xs font-mono tracking-[0.2em] text-gilt-dark">
+              <div class="flex items-center gap-2">
+                <h3 class="font-serif font-bold text-xl text-ink tracking-wider">
+                  盛唐文明与丝绸之路
+                </h3>
+                <TangSealBadge text="大唐典藏" size="sm" />
+              </div>
+              <p class="text-xs font-mono tracking-[0.2em] text-gilt-dark mt-0.5">
                 THE GLORY OF TANG DYNASTY · DIGITAL MUSEUM
               </p>
             </div>

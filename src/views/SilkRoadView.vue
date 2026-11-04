@@ -67,7 +67,10 @@ function openNodeLightbox(node: SilkRoadNode) {
       />
 
       <!-- Interactive SVG Silk Road Map Canvas -->
-      <div class="tang-scroll-card tang-corner-frame rounded-2xl p-4 sm:p-6 bg-[#1C1612] text-[#F5EFE6] border-2 border-gilt/50 shadow-2xl mb-8">
+      <div
+        data-navbar-contrast="dark"
+        class="tang-scroll-card tang-corner-frame rounded-2xl p-4 sm:p-6 bg-[#1C1612] text-[#F5EFE6] border-2 border-gilt/50 shadow-2xl mb-8"
+      >
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-gilt/30">
           <div class="flex items-center gap-2.5">
             <TangSealBadge text="丝路舆图" size="sm" />

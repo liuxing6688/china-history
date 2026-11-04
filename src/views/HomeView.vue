@@ -141,7 +141,10 @@ const museumHalls = [
     <!-- ===================================================================
          1. GRAND IMPERIAL HERO SECTION (恢弘盛唐主视觉：大明宫与万里丝路)
          =================================================================== -->
-    <section class="relative overflow-hidden bg-[#17110E] text-[#F7F1E5] border-b-2 border-gilt/50">
+    <section
+      data-navbar-contrast="dark"
+      class="relative overflow-hidden bg-[#17110E] text-[#F7F1E5] border-b-2 border-gilt/50"
+    >
       <!-- Background Layered Imagery & Subtle Vignette -->
       <div class="absolute inset-0 opacity-35">
         <img

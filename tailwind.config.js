@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+const withAlpha = (cssVar) =>
+  `color-mix(in srgb, var(${cssVar}) calc(<alpha-value> * 100%), transparent)`
+
 export default {
   darkMode: 'class',
   content: [
@@ -9,35 +12,35 @@ export default {
     extend: {
       colors: {
         cinnabar: {
-          DEFAULT: 'var(--color-cinnabar)',
-          light: 'var(--color-cinnabar-light)',
-          dark: 'var(--color-cinnabar-dark)',
+          DEFAULT: withAlpha('--color-cinnabar'),
+          light: withAlpha('--color-cinnabar-light'),
+          dark: withAlpha('--color-cinnabar-dark'),
         },
         gilt: {
-          DEFAULT: 'var(--color-gilt)',
-          light: 'var(--color-gilt-light)',
-          dark: 'var(--color-gilt-dark)',
+          DEFAULT: withAlpha('--color-gilt'),
+          light: withAlpha('--color-gilt-light'),
+          dark: withAlpha('--color-gilt-dark'),
         },
         imperial: {
-          DEFAULT: 'var(--color-imperial)',
-          light: 'var(--color-imperial-light)',
-          dark: 'var(--color-imperial-dark)',
+          DEFAULT: withAlpha('--color-imperial'),
+          light: withAlpha('--color-imperial-light'),
+          dark: withAlpha('--color-imperial-dark'),
         },
         xuan: {
-          DEFAULT: 'var(--color-xuan)',
-          paper: 'var(--color-xuan-paper)',
-          card: 'var(--color-xuan-card)',
-          elevated: 'var(--color-xuan-elevated)',
+          DEFAULT: withAlpha('--color-xuan'),
+          paper: withAlpha('--color-xuan-paper'),
+          card: withAlpha('--color-xuan-card'),
+          elevated: withAlpha('--color-xuan-elevated'),
         },
         ink: {
-          DEFAULT: 'var(--color-ink)',
-          secondary: 'var(--color-ink-secondary)',
-          muted: 'var(--color-ink-muted)',
+          DEFAULT: withAlpha('--color-ink'),
+          secondary: withAlpha('--color-ink-secondary'),
+          muted: withAlpha('--color-ink-muted'),
         },
         dunhuang: {
-          cyan: 'var(--color-dunhuang-cyan)',
-          jade: 'var(--color-dunhuang-jade)',
-          ochre: 'var(--color-dunhuang-ochre)',
+          cyan: withAlpha('--color-dunhuang-cyan'),
+          jade: withAlpha('--color-dunhuang-jade'),
+          ochre: withAlpha('--color-dunhuang-ochre'),
         }
       },
       fontFamily: {
